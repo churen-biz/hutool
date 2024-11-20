@@ -290,4 +290,48 @@ public class JSONUtilTest {
 		final String jsonStr = JSONUtil.toJsonStr(userId);
 		assertEquals("{}", jsonStr);
 	}
+
+	@Test
+	public void testToInstance() {
+		String num = "123";
+		final Long rsLong = JSONUtil.toInstance(num, Long.class);
+		assertEquals(123L, rsLong);
+		final Integer rsInteger = JSONUtil.toInstance(num, Integer.class);
+		assertEquals(123, rsInteger);
+		final Short rsShort = JSONUtil.toInstance(num, Short.class);
+		assertEquals((short) 123, rsShort);
+
+		String num2 = "123.56";
+		final Double rsDouble = JSONUtil.toInstance(num2, Double.class);
+		assertEquals(123.56D, rsDouble);
+		final Float rsFloat = JSONUtil.toInstance(num2, Float.class);
+		assertEquals(123.56F, rsFloat);
+
+		String bool = "true";
+		final Boolean rsBool = JSONUtil.toInstance(bool, Boolean.class);
+		assertEquals(true, rsBool);
+
+		String str = "true and false";
+		final String rsStr = JSONUtil.toInstance(str, String.class);
+		assertEquals(str, rsStr);
+	}
+
+	@Test
+	public void testToInstanceStr() {
+		Integer integer = 123;
+		String numStr = JSONUtil.toInstanceStr(integer);
+		assertEquals(String.valueOf(integer), numStr);
+
+		Float f = 123.56F;
+		String floatStr = JSONUtil.toInstanceStr(f);
+		assertEquals(String.valueOf(f), floatStr);
+
+		Boolean bool = true;
+		final String boolStr = JSONUtil.toInstanceStr(bool);
+		assertEquals(String.valueOf(bool), boolStr);
+
+		String str = "true and false";
+		final String strStr = JSONUtil.toInstanceStr(str);
+		assertEquals(str, strStr);
+	}
 }

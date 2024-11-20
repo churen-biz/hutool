@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
@@ -396,6 +398,65 @@ public class JSONUtil {
 		return XML.toXml(json);
 	}
 	// -------------------------------------------------------------------- toString end
+
+	// -------------------------------------------------------------------- instance start
+	/**
+	 * JSON字符串或一些基本类型的字符串转为实体类对象，转换异常将被抛出
+	 * 支持 Long.clas, Integer.clas, Short.class, Double.class, Float.class, Boolean.class, String.class
+	 *
+	 * @param <T>        Bean类型 或 一些基本类型
+	 * @param instanceString JSON字符串 或 一些基本类型使用 String.valueOf 方法得到的字符串
+	 * @param beanClass  实体类对象
+	 * @return 实体类对象
+	 */
+	public static <T> T toInstance(String instanceString, Class<T> beanClass) {
+		try {
+			if (null == instanceString) {
+				return null;
+			}
+			if (beanClass.isAssignableFrom(Long.class)
+				|| beanClass.isAssignableFrom(Integer.class)
+				|| beanClass.isAssignableFrom(Short.class)
+				|| beanClass.isAssignableFrom(Double.class)
+				|| beanClass.isAssignableFrom(Float.class)
+				|| beanClass.isAssignableFrom(Boolean.class)
+				|| beanClass.isAssignableFrom(String.class)
+			) {
+				Constructor<T> constructor = beanClass.getConstructor(String.class);
+				return constructor.newInstance(instanceString);
+			} else {
+				return toBean(parseObj(instanceString), beanClass);
+			}
+		} catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+			return toBean(parseObj(instanceString), beanClass);
+		}
+	}
+
+	/**
+	 * 转换为JSON字符串, 或者基础类型的字符串
+	 *
+	 * @param obj 被转为JSON的对象
+	 * @return JSON字符串
+	 */
+	public static String toInstanceStr(Object obj) {
+		if (null == obj) {
+			return null;
+		}
+		if (obj instanceof Long
+			|| obj instanceof Integer
+			|| obj instanceof Short
+			|| obj instanceof Double
+			|| obj instanceof Float
+			|| obj instanceof Boolean
+			|| obj instanceof String
+		) {
+			return String.valueOf(obj);
+		} else {
+			return toJsonStr(obj, (JSONConfig) null);
+		}
+	}
+
+	// -------------------------------------------------------------------- instance end
 
 	// -------------------------------------------------------------------- toBean start
 
